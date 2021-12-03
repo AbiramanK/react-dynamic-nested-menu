@@ -32,19 +32,19 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
 
     const [menuData, setMenuData] = useState([
         {
-            name: 'PMenu1',
+            name: 'Home Page',
             id: uuidv4(),
             children: [
                 {
-                    name: 'CMenu11',
+                    name: 'Second Level',
                     id: uuidv4(),
                     children: [
                         {
-                            name: 'CCMenu12',
+                            name: 'Third Level',
                             id: uuidv4(),
                             children: [
                                 {
-                                    name: 'CCMenu13',
+                                    name: 'Fourth Level',
                                     id: uuidv4()
                                 },
                             ]
@@ -54,33 +54,33 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
             ],
         },
         {
-            name: 'PMenu2',
+            name: 'Left Dropdown',
             id: uuidv4()
         },
         {
-            name: 'PMenu3',
+            name: 'Mega Menu',
             id: uuidv4(),
             children: [
                 {
-                    name: 'CMenu31',
+                    name: 'Another Page',
                     id: uuidv4()
                 },
                 {
-                    name: 'CMenu32',
+                    name: 'Some Page',
                     id: uuidv4()
                 },
                 {
-                    name: 'CMenu33',
+                    name: 'Exist Page',
                     id: uuidv4()
                 },
                 {
-                    name: 'CMenu34',
+                    name: 'No Page',
                     id: uuidv4()
                 },
             ],
         },
         {
-            name: 'Pmenu4',
+            name: 'Any Page',
             id: uuidv4()
         },
     ]);

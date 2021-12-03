@@ -13,6 +13,7 @@ import {
     Typography,
     message
 } from "antd";
+import { v4 as uuidv4 } from 'uuid';
 
 const { SubMenu } = Menu;
 const { Option } = Select;
@@ -23,6 +24,7 @@ interface IHomeProps {
 
 interface MenuItemType {
     name: string;
+    id: string;
     children?: Array<MenuItemType>;
 }
 
@@ -31,15 +33,19 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
     const [menuData, setMenuData] = useState([
         {
             name: 'PMenu1',
+            id: uuidv4(),
             children: [
                 {
                     name: 'CMenu11',
+                    id: uuidv4(),
                     children: [
                         {
                             name: 'CCMenu12',
+                            id: uuidv4(),
                             children: [
                                 {
                                     name: 'CCMenu13',
+                                    id: uuidv4()
                                 },
                             ]
                         },
@@ -49,26 +55,33 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
         },
         {
             name: 'PMenu2',
+            id: uuidv4()
         },
         {
             name: 'PMenu3',
+            id: uuidv4(),
             children: [
                 {
                     name: 'CMenu31',
+                    id: uuidv4()
                 },
                 {
                     name: 'CMenu32',
+                    id: uuidv4()
                 },
                 {
                     name: 'CMenu33',
+                    id: uuidv4()
                 },
                 {
                     name: 'CMenu34',
+                    id: uuidv4()
                 },
             ],
         },
         {
             name: 'Pmenu4',
+            id: uuidv4()
         },
     ]);
 
@@ -80,18 +93,18 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
     }, [menuData])
 
     const handleClick = (e: any) => {
-        message.success(`${e.key} clicked`);
+        message.success(`${e.key.split('_')[1]} clicked`);
     }
 
     const handleNestedMenu = (menus: Array<MenuItemType>) => {
 
         return menus.map((menu: MenuItemType, index: number) => {
             if (!menu.children) {
-                return <Menu.Item key={`${menu.name}`}>{menu.name}</Menu.Item>;
+                return <Menu.Item key={`${menu.id}_${menu.name}`}>{menu.name}</Menu.Item>;
             }
 
             return (
-                <SubMenu key={`${menu.name}`} title={`${menu.name}`}>
+                <SubMenu key={`${menu.id}_${menu.name}`} title={`${menu.name}`}>
                     {handleNestedMenu(menu.children)}
                 </SubMenu>
             );
@@ -99,16 +112,13 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
     }
 
     const onFinish = (values: any) => {
-        if(parentMenuOptions.includes(values.categoryName)) {
-            message.error("Menu name already exist, try different menu name");
-        } else {
-            addMenuItem({
-                parentCategory: values.parentCategory,
-                categoryName: values.categoryName
-            })
-            message.success(`${values.categoryName} menu added in ${values.parentCategory}`);
-            onReset();
-        }
+        addMenuItem({
+            parentCategory: values.parentCategory,
+            categoryName: values.categoryName,
+            id: uuidv4()
+        })
+        message.success(`${values.categoryName} menu added in ${values.parentCategory.split('_')[1]}`);
+        onReset();
     };
 
     const onFinishFailed = (errorInfo: any) => {
@@ -119,36 +129,37 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
         form.resetFields();
     };
 
-    const addMenuItem = (category: { parentCategory: string | any, categoryName: string | any }) => {
+    const addMenuItem = (category: { parentCategory: string | any, categoryName: string | any, id: string | any }) => {
 
         const insertMenu = (data: Array<MenuItemType> | any) => {
             return data.map((menu: MenuItemType, index: number) => {
                 if (!menu.children) {
-                   if(menu.name === category.parentCategory) {
+                   if(menu.id === category.parentCategory.split('_')[0]) {
                        menu.children = [
                            {
-                               name: category.categoryName
+                               name: category.categoryName,
+                               id: uuidv4()
                            }
                        ]
                    }
 
-                   console.log("menu items", menu)
-
                    return menu;
                 }
                 if(menu.children) {
-                    if(menu.name === category.parentCategory) {
+                    if(menu.id === category.parentCategory.split('_')[0]) {
                         menu.children.push(
                             {
-                                name: category.categoryName
+                                name: category.categoryName,
+                                id: uuidv4()
                             }
                         );
                     }
                     let tempMenu = {
                         name: menu.name,
+                        id: category.id,
                         children: insertMenu(menu.children)
                     };
-                    console.log("temp menu", tempMenu)
+
                     return tempMenu;
                 }
             });
@@ -165,10 +176,16 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
             
             data.map((menu: MenuItemType, index: number) => {
                 if (!menu.children) {
-                    menuOptions.push(menu.name);
+                    menuOptions.push({
+                        name: menu.name,
+                        id: menu.id
+                    });
                 }
                 if (menu.children) {
-                    menuOptions.push(menu.name);
+                    menuOptions.push({
+                        name: menu.name,
+                        id: menu.id
+                    });
                     insertMenu(menu.children);
                 }
             });
@@ -236,9 +253,9 @@ const Home: FunctionComponent<IHomeProps> = (props) => {
                             <Select
                                 placeholder="Choose a Parent"
                             >
-                                {parentMenuOptions && parentMenuOptions.map((category: string, index: number) => {
+                                {parentMenuOptions && parentMenuOptions.map((category: any, index: number) => {
                                     return (
-                                        <Option key={index} value={`${category}`}>{category}</Option>
+                                        <Option key={index} value={`${category.id}_${category.name}`}>{category.name}</Option>
                                     )
                                 })}
                             </Select>
